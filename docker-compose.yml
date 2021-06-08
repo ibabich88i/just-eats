@@ -49,10 +49,10 @@ services:
         ports:
             - 5672:5672
             - 15672:15672
-    &laravel-message-handler laravel-message-handler:
-        <<: *php-service-template
-        restart: always
-        container_name: *laravel-message-handler
-        hostname: *laravel-message-handler
-        command: bin/console messenger:consume-messages
+#    &laravel-message-handler laravel-message-handler:
+#        <<: *php-service-template
+#        restart: always
+#        container_name: *laravel-message-handler
+#        hostname: *laravel-message-handler
+#        command: bin/console messenger:consume-messages
 
