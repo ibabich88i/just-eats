@@ -1,0 +1,58 @@
+version: '3.7'
+
+volumes:
+    mysql:
+        driver: local
+
+services:
+    db:
+        image: mysql:5.7.29
+        volumes:
+            - mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        ports:
+            - '3306:3306'
+        expose:
+            - '3306'
+    &php-service php: &php-service-template
+        build:
+            context: Docker/php7-fpm
+            args:
+                TIMEZONE: ${TIMEZONE}
+        working_dir: /var/www/laravel
+        volumes:
+            - ./:/var/www/laravel
+            - ./logs/laravel:/var/www/app/logs
+        user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
+    nginx:
+        build: Docker/nginx
+        ports:
+            - 80:80
+        volumes:
+            - ./logs/nginx/:/var/log/nginx
+            - ./:/var/www/laravel
+            - ./logs/laravel:/var/www/app/logs
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        container_name: rabbitmq
+        volumes:
+            - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+            - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+        environment:
+            RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        ports:
+            - 5672:5672
+            - 15672:15672
+    &laravel-message-handler laravel-message-handler:
+        <<: *php-service-template
+        restart: always
+        container_name: *laravel-message-handler
+        hostname: *laravel-message-handler
+        command: bin/console messenger:consume-messages
+
