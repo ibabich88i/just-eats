@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\DataTransferObjects\MessageStoreDTOInterface;
+use App\Services\Emails\EmailNotificationServiceInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MessageHandlerJob implements ShouldQueue
+class MessageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public const QUEUE_NAME = 'email-messages';
 
     /**
      * @var MessageStoreDTOInterface
@@ -29,7 +28,7 @@ class MessageHandlerJob implements ShouldQueue
      */
     public function __construct(MessageStoreDTOInterface $dataObject)
     {
-        $this->onQueue(self::QUEUE_NAME);
+        $this->onQueue(env('queues.queue_send_email'));
 
         $this->dataObject = $dataObject;
     }
@@ -39,8 +38,8 @@ class MessageHandlerJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(EmailNotificationServiceInterface $service)
     {
-
+        $service->process($this->dataObject);
     }
 }

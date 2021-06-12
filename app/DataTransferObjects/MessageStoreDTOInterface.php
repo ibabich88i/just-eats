@@ -14,15 +14,15 @@ interface MessageStoreDTOInterface
     /**
      * @return string
      */
-    public function getMessage(): string;
-
-    /**
-     * @return string
-     */
     public function getModule(): string;
 
     /**
      * @return string
      */
     public function getAction(): string;
+
+    /**
+     * @return array
+     */
+    public function getData(): array;
 }

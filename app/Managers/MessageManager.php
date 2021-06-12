@@ -6,7 +6,7 @@ namespace App\Managers;
 
 use App\DataTransferObjects\MessageStoreDTOInterface;
 use App\Http\Resources\MessageStoreResource;
-use App\Jobs\MessageHandlerJob;
+use App\Jobs\MessageJob;
 
 class MessageManager implements MessageManagerInterface
 {
@@ -15,7 +15,7 @@ class MessageManager implements MessageManagerInterface
      */
     public function store(MessageStoreDTOInterface $dataObject): MessageStoreResource
     {
-        MessageHandlerJob::dispatch($dataObject);
+        MessageJob::dispatch($dataObject);
 
         return new MessageStoreResource(null);
     }

@@ -14,11 +14,6 @@ class MessageStoreDTO implements MessageStoreDTOInterface
     /**
      * @var string
      */
-    private string $message;
-
-    /**
-     * @var string
-     */
     private string $module;
 
     /**
@@ -27,18 +22,23 @@ class MessageStoreDTO implements MessageStoreDTOInterface
     private string $action;
 
     /**
+     * @var array
+     */
+    private array $data;
+
+    /**
      * MessageStoreDTO constructor.
      * @param array $recipients
-     * @param string $message
+     * @param array $data
      * @param string $module
      * @param string $action
      */
-    public function __construct(array $recipients, string $message, string $module, string $action)
+    public function __construct(array $recipients, array $data, string $module, string $action)
     {
         $this->recipients = $recipients;
-        $this->message = $message;
         $this->module = $module;
         $this->action = $action;
+        $this->data = $data;
     }
 
     /**
@@ -47,14 +47,6 @@ class MessageStoreDTO implements MessageStoreDTOInterface
     public function getRecipients(): array
     {
         return $this->recipients;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMessage(): string
-    {
-        return $this->message;
     }
 
     /**
@@ -71,5 +63,13 @@ class MessageStoreDTO implements MessageStoreDTOInterface
     public function getAction(): string
     {
         return $this->action;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getData(): array
+    {
+        return $this->data;
     }
 }

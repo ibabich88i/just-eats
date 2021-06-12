@@ -2,12 +2,30 @@
 
 namespace App\Providers;
 
+use App\Clients\Emails\EmailClientPool;
+use App\Clients\Emails\EmailClientPoolInterface;
 use App\DataTransferObjects\Factories\MessageStoreDTOFactory;
 use App\DataTransferObjects\Factories\MessageStoreDTOFactoryInterface;
+use App\Clients\Emails\MailjetClient;
+use App\Clients\Emails\MailjetClientInterface;
+use App\Handlers\Emails\EmailHandlerPool;
+use App\Handlers\Emails\EmailHandlerPoolInterface;
+use App\Handlers\Emails\UserChangePasswordEmailHandler;
 use App\Managers\MessageManager;
 use App\Managers\MessageManagerInterface;
+use App\Models\Builders\MessageModelCreatorBuilder;
+use App\Models\Builders\MessageModelCreatorBuilderInterface;
+use App\Models\Factories\MessageModelFactory;
+use App\Models\Factories\MessageModelFactoryInterface;
+use App\Models\MessageModel;
+use App\Services\Emails\EmailNotificationService;
+use App\Services\Emails\EmailNotificationServiceInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use Psr\Log\LoggerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +37,12 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(
+            ClientInterface::class,
+            function (Container $container) {
+                return new Client();
+            }
+        );
+        $this->app->bind(
             MessageStoreDTOFactoryInterface::class,
             function (Container $container) {
                 return new MessageStoreDTOFactory();
@@ -29,6 +53,67 @@ class AppServiceProvider extends ServiceProvider
             MessageManagerInterface::class,
             function (Container $container) {
                 return new MessageManager();
+            }
+        );
+
+        $this->app->bind(
+            MessageModelCreatorBuilderInterface::class,
+            function (Container $container) {
+                return new MessageModelCreatorBuilder(
+                    $container->get(MessageModel::class),
+                );
+            }
+        );
+
+        $this->app->bind(
+            MessageModelFactoryInterface::class,
+            function (Container $container) {
+                return new MessageModelFactory();
+            }
+        );
+
+        $this->app->bind(
+            MailjetClientInterface::class,
+            function (Container $container) {
+                return new MailjetClient(
+                    $container->get(ClientInterface::class),
+                    $container->get(LoggerInterface::class),
+                    $container->get(Repository::class),
+                );
+            }
+        );
+
+        $this->app->bind(
+            EmailHandlerPoolInterface::class,
+            function (Container $container) {
+                $pool = new EmailHandlerPool();
+
+                $pool->add($container->get(UserChangePasswordEmailHandler::class), 'user.change-password');
+
+                return $pool;
+            }
+        );
+
+        $this->app->bind(
+            EmailClientPoolInterface::class,
+            function (Container $container) {
+                $pool = new EmailClientPool();
+
+                $pool->add($container->get(MailjetClientInterface::class));
+
+                return $pool;
+            }
+        );
+
+        $this->app->bind(
+            EmailNotificationServiceInterface::class,
+            function (Container $container) {
+                return new EmailNotificationService(
+                    $container->get(EmailHandlerPoolInterface::class),
+                    $container->get(EmailClientPoolInterface::class),
+                    $container->get(MessageModelCreatorBuilderInterface::class),
+                    $container->get(LoggerInterface::class),
+                );
             }
         );
     }

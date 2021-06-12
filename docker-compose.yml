@@ -54,5 +54,5 @@ services:
 #        restart: always
 #        container_name: *laravel-message-handler
 #        hostname: *laravel-message-handler
-#        command: bin/console messenger:consume-messages
+#        command: php artisan queue:work --queue=${QUEUE_SEND_EMAIL}
 

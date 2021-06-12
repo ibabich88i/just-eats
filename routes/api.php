@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -28,7 +28,7 @@ class MessageStoreRequest extends FormRequest
         return [
             'recipients' => ['required', 'array'],
             'recipients.*.email' => ['required', 'email'],
-            'message' => ['required', 'string'],
+            'data' => ['required', 'array'],
             'module' => ['required', 'string'],
             'action' => ['required', 'string'],
         ];

@@ -16,7 +16,7 @@ class MessageStoreDTOFactory implements MessageStoreDTOFactoryInterface
     {
         return new MessageStoreDTO(
             $data['recipients'],
-            $data['message'],
+            $data['data'],
             $data['module'],
             $data['action'],
         );
