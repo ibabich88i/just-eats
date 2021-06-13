@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Clients\Emails\EmailClientPool;
 use App\Clients\Emails\EmailClientPoolInterface;
+use App\DataTransferObjects\Builders\MessageDTOBuilder;
+use App\DataTransferObjects\Builders\MessageDTOBuilderInterface;
 use App\DataTransferObjects\Factories\MessageStoreDTOFactory;
 use App\DataTransferObjects\Factories\MessageStoreDTOFactoryInterface;
 use App\Clients\Emails\MailjetClient;
@@ -25,6 +27,8 @@ use GuzzleHttp\ClientInterface;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Illuminate\View\Factory;
 use Psr\Log\LoggerInterface;
 
 class AppServiceProvider extends ServiceProvider
@@ -52,7 +56,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             MessageManagerInterface::class,
             function (Container $container) {
-                return new MessageManager();
+                $queueName = $container->get(Repository::class)->get('queues.queue_send_email');
+
+                return new MessageManager($queueName);
             }
         );
 
@@ -79,6 +85,29 @@ class AppServiceProvider extends ServiceProvider
                     $container->get(ClientInterface::class),
                     $container->get(LoggerInterface::class),
                     $container->get(Repository::class),
+                );
+            }
+        );
+
+        $this->app->bind(
+            MessageDTOBuilderInterface::class,
+            function (Container $container) {
+                return new MessageDTOBuilder(
+                    $container->get(Factory::class),
+                    $container->get(Str::class),
+                    $container->get(Repository::class),
+                );
+            }
+        );
+
+        $this->app->bind(
+            UserChangePasswordEmailHandler::class,
+            function (Container $container) {
+                $appUrl = $container->get(Repository::class)->get('app.url');
+
+                return new UserChangePasswordEmailHandler(
+                    $container->get(MessageDTOBuilderInterface::class),
+                    $appUrl
                 );
             }
         );

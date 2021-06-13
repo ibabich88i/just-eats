@@ -9,6 +9,7 @@ use App\Clients\Emails\EmailClientPoolInterface;
 use App\DataTransferObjects\MessageStoreDTOInterface;
 use App\Handlers\Emails\EmailHandlerPoolInterface;
 use App\Models\Builders\MessageModelCreatorBuilderInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 class EmailNotificationService implements EmailNotificationServiceInterface
@@ -75,14 +76,15 @@ class EmailNotificationService implements EmailNotificationServiceInterface
                         ->build();
 
                     $this->logger->info(
-                        sprintf('Email was sent be "%s" client.', $client->getClientName())
+                        sprintf('Email was sent by "%s" client.', $client->getClientName())
                     );
 
                     break;
                 }
-            } catch (\Exception $exception) {
-                $this->logger->info(
-                    sprintf('%s:%s - %s', __METHOD__, __LINE__, $exception->getMessage())
+            } catch (Exception $exception) {
+                $this->logger->error(
+                    sprintf('%s:%s - %s', __METHOD__, __LINE__, $exception->getMessage()),
+                    $exception->getTrace()
                 );
             }
         }

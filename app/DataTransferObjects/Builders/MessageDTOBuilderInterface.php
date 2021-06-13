@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataTransferObjects\Builders;
 
-use App\DataTransferObjects\MessageDTOInterface;
+use App\DataTransferObjects\Notifications\Emails\MessageDTOInterface;
 use App\Services\Emails\MessageTypesInterface;
 
 interface MessageDTOBuilderInterface
@@ -32,6 +32,12 @@ interface MessageDTOBuilderInterface
      * @return $this
      */
     public function setRecipients(array $recipients): self;
+
+    /**
+     * @param string $subject
+     * @return $this
+     */
+    public function setSubject(string $subject): self;
 
     /**
      * @return MessageDTOInterface

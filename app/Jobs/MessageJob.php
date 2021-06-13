@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Psr\Log\LoggerInterface;
 
 class MessageJob implements ShouldQueue
 {
@@ -28,8 +29,6 @@ class MessageJob implements ShouldQueue
      */
     public function __construct(MessageStoreDTOInterface $dataObject)
     {
-        $this->onQueue(env('queues.queue_send_email'));
-
         $this->dataObject = $dataObject;
     }
 
@@ -38,8 +37,10 @@ class MessageJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(EmailNotificationServiceInterface $service)
+    public function handle(EmailNotificationServiceInterface $service, LoggerInterface $logger)
     {
+        $logger->info(sprintf('Job %s start processing.', self::class));
+
         $service->process($this->dataObject);
     }
 }

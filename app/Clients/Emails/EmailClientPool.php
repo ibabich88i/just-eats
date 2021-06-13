@@ -39,9 +39,9 @@ class EmailClientPool implements EmailClientPoolInterface, Iterator
     }
 
     /**
-     * @return EmailClientPoolInterface
+     * @return EmailClientInterface
      */
-    public function current(): EmailClientPoolInterface
+    public function current(): EmailClientInterface
     {
         return $this->clients[$this->position];
     }

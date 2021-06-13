@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Clients\Emails;
 
-use App\DataTransferObjects\MessageDTOInterface;
+use App\DataTransferObjects\Notifications\Emails\MessageDTOInterface;
 
 interface EmailClientInterface
 {

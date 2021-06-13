@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1>Hello</h1>
-    <p>This will message for you if you wont change password.</p>
-    <a href="{{ $link }}">Follow this link</a>
+    <p>You received this message because would like to change password.</p>
+    <a href="{{ $link }}">Please follow this link</a>
 </body>
 </html>

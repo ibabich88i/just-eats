@@ -92,7 +92,7 @@ class MessageModelCreatorBuilder implements MessageModelCreatorBuilderInterface
 
         foreach ($this->recipients as $recipient) {
             $payload[] = [
-                'email' => $recipient,
+                'email' => $recipient['email'],
                 'message' => $this->message,
                 'module' => $this->module,
                 'action' => $this->action,

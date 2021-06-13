@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\DataTransferObjects\Builders;
 
-use App\DataTransferObjects\MessageDTOInterface;
+use App\DataTransferObjects\Notifications\Emails\MessageDTO;
+use App\DataTransferObjects\Notifications\Emails\MessageDTOInterface;
 use App\Services\Emails\MessageTypesInterface;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Support\Str;
 
@@ -15,6 +17,16 @@ class MessageDTOBuilder implements MessageDTOBuilderInterface
      * @var ViewFactory
      */
     private ViewFactory $viewFactory;
+
+    /**
+     * @var Str
+     */
+    private Str $strHelper;
+
+    /**
+     * @var Repository
+     */
+    private Repository $config;
 
     /**
      * @var string
@@ -37,21 +49,24 @@ class MessageDTOBuilder implements MessageDTOBuilderInterface
     private array $recipients;
 
     /**
-     * @var Str
+     * @var string
      */
-    private Str $strHelper;
+    private string $subject;
 
     /**
      * MessageDTOBuilder constructor.
      * @param ViewFactory $viewFactory
      * @param Str $strHelper
+     * @param Repository $config
      */
     public function __construct(
         ViewFactory $viewFactory,
-        Str $strHelper
+        Str $strHelper,
+        Repository $config
     ) {
         $this->viewFactory = $viewFactory;
         $this->strHelper = $strHelper;
+        $this->config = $config;
     }
 
     /**
@@ -79,7 +94,9 @@ class MessageDTOBuilder implements MessageDTOBuilderInterface
      */
     public function setData(array $data): MessageDTOBuilderInterface
     {
-        return $this->data = $data;
+        $this->data = $data;
+
+        return $this;
     }
 
     /**
@@ -95,9 +112,26 @@ class MessageDTOBuilder implements MessageDTOBuilderInterface
     /**
      * @inheritDoc
      */
+    public function setSubject(string $subject): MessageDTOBuilderInterface
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function build(): MessageDTOInterface
     {
-
+        return new MessageDTO(
+            $this->getMessage(),
+            $this->subject,
+            $this->messageType,
+            $this->getRecipients(),
+            $this->getFrom(),
+            $this->data
+        );
     }
 
     /**
@@ -126,5 +160,27 @@ class MessageDTOBuilder implements MessageDTOBuilderInterface
         }
 
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    private function getRecipients(): array
+    {
+        return array_map(
+            fn ($recipient) => ['Email' => $recipient, 'Name' => ''],
+            $this->recipients
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getFrom(): array
+    {
+        return [
+            'Email' => $this->config->get('email-cliet-info.from'),
+            'Name' => '',
+        ];
     }
 }
