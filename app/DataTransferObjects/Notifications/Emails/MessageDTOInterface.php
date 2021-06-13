@@ -22,9 +22,9 @@ interface MessageDTOInterface
     public function getSubject(): string;
 
     /**
-     * @return array
+     * @return string
      */
-    public function getFrom(): array;
+    public function getFrom(): string;
 
     /**
      * @return string

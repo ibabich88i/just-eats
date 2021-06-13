@@ -114,9 +114,15 @@ class MailjetClient implements MailjetClientInterface, EmailClientInterface
             'Messages' =>
                 [
                     [
-                        'From' => $messageDTO->getFrom(),
+                        'From' => [
+                            'Email' => $messageDTO->getFrom(),
+                            'Name' => ''
+                        ],
                         'Subject' => $messageDTO->getSubject(),
-                        'To' => $messageDTO->getRecipients(),
+                        'To' => array_map(
+                            fn($recipient) => ['Email' => $recipient['email'], 'Name' => ''],
+                            $messageDTO->getRecipients()
+                        ),
                         'HTMLPart' => (function(MessageDTOInterface $messageDTO) {
                             if ($messageDTO->getMessageType() !== MessageTypesInterface::MESSAGE_TYPE_TEXT) {
                                 return $messageDTO->getMessage();

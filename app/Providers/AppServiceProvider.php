@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Clients\Emails\EmailClientPool;
 use App\Clients\Emails\EmailClientPoolInterface;
+use App\Clients\Emails\SendgridClient;
+use App\Clients\Emails\SendgridClientInterface;
 use App\DataTransferObjects\Builders\MessageDTOBuilder;
 use App\DataTransferObjects\Builders\MessageDTOBuilderInterface;
 use App\DataTransferObjects\Factories\MessageStoreDTOFactory;
@@ -90,6 +92,17 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
+            SendgridClientInterface::class,
+            function (Container $container) {
+                return new SendgridClient(
+                    $container->get(ClientInterface::class),
+                    $container->get(Repository::class),
+                    $container->get(LoggerInterface::class),
+                );
+            }
+        );
+
+        $this->app->bind(
             MessageDTOBuilderInterface::class,
             function (Container $container) {
                 return new MessageDTOBuilder(
@@ -129,6 +142,7 @@ class AppServiceProvider extends ServiceProvider
                 $pool = new EmailClientPool();
 
                 $pool->add($container->get(MailjetClientInterface::class));
+                $pool->add($container->get(SendgridClientInterface::class));
 
                 return $pool;
             }

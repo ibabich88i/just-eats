@@ -35,8 +35,8 @@ class MessageController extends Controller
     {
         $dataObject = $factory->create($request->all());
 
-        $resource = $this->manager->store($dataObject);
+        $this->manager->store($dataObject);
 
-        return $resource->response()->setStatusCode(JsonResponse::HTTP_CREATED);
+        return (new JsonResponse())->setStatusCode(JsonResponse::HTTP_CREATED);
     }
 }

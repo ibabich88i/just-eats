@@ -128,8 +128,8 @@ class MessageDTOBuilder implements MessageDTOBuilderInterface
             $this->getMessage(),
             $this->subject,
             $this->messageType,
-            $this->getRecipients(),
-            $this->getFrom(),
+            $this->config->get('email-cliet-info.from'),
+            $this->recipients,
             $this->data
         );
     }
@@ -160,27 +160,5 @@ class MessageDTOBuilder implements MessageDTOBuilderInterface
         }
 
         return null;
-    }
-
-    /**
-     * @return array
-     */
-    private function getRecipients(): array
-    {
-        return array_map(
-            fn ($recipient) => ['Email' => $recipient, 'Name' => ''],
-            $this->recipients
-        );
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getFrom(): array
-    {
-        return [
-            'Email' => $this->config->get('email-cliet-info.from'),
-            'Name' => '',
-        ];
     }
 }

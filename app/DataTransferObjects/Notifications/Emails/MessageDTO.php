@@ -27,9 +27,9 @@ class MessageDTO implements MessageDTOInterface
     private array $recipients;
 
     /**
-     * @var array
+     * @var string
      */
-    private array $from;
+    private string $from;
 
     /**
      * @var array
@@ -41,23 +41,23 @@ class MessageDTO implements MessageDTOInterface
      * @param string $message
      * @param string $subject
      * @param string $messageType
+     * @param string $from
      * @param array $recipients
-     * @param array $from
      * @param array $data
      */
     public function __construct(
         string $message,
         string $subject,
         string $messageType,
+        string $from,
         array $recipients,
-        array $from,
         array $data
     ) {
         $this->message = $message;
         $this->subject = $subject;
         $this->messageType = $messageType;
-        $this->recipients = $recipients;
         $this->from = $from;
+        $this->recipients = $recipients;
         $this->data = $data;
     }
 
@@ -88,7 +88,7 @@ class MessageDTO implements MessageDTOInterface
     /**
      * @inheritDoc
      */
-    public function getFrom(): array
+    public function getFrom(): string
     {
         return $this->from;
     }

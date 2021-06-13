@@ -40,7 +40,7 @@ class UserChangePasswordEmailHandler implements EmailHandlerInterface
     public function handle(MessageStoreDTOInterface $messageStoreDTO): MessageDTOInterface
     {
         return $this->messageDTOBuilder
-            ->setRecipients(array_map(fn($recipient) => $recipient['email'], $messageStoreDTO->getRecipients()))
+            ->setRecipients($messageStoreDTO->getRecipients())
             ->setTemplateName('user-chanche-password')
             ->setSubject('Password changing.')
             ->setMessageType(MessageTypesInterface::MESSAGE_TYPE_HTML)
