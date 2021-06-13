@@ -5,22 +5,23 @@ declare(strict_types=1);
 namespace App\Managers;
 
 use App\DataTransferObjects\MessageStoreDTOInterface;
-use App\Jobs\MessageJob;
+use App\Events\MessageStoreEvent;
+use Illuminate\Contracts\Events\Dispatcher;
 
 class MessageManager implements MessageManagerInterface
 {
     /**
-     * @var string
+     * @var Dispatcher
      */
-    private string $queueName;
+    private Dispatcher $dispatcher;
 
     /**
      * MessageManager constructor.
-     * @param string $queueName
+     * @param Dispatcher $dispatcher
      */
-    public function __construct(string $queueName)
+    public function __construct(Dispatcher $dispatcher)
     {
-        $this->queueName = $queueName;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -28,6 +29,6 @@ class MessageManager implements MessageManagerInterface
      */
     public function store(MessageStoreDTOInterface $dataObject)
     {
-        MessageJob::dispatch($dataObject)->onQueue($this->queueName);
+        $this->dispatcher->dispatch(new MessageStoreEvent($dataObject));
     }
 }

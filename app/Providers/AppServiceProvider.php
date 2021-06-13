@@ -28,6 +28,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\Factory;
@@ -58,9 +59,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             MessageManagerInterface::class,
             function (Container $container) {
-                $queueName = $container->get(Repository::class)->get('queues.queue_send_email');
-
-                return new MessageManager($queueName);
+                return new MessageManager($container->get(Dispatcher::class));
             }
         );
 
