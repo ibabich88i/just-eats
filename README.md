@@ -29,3 +29,35 @@
 
 ##### Run migrations
 > `docker-compose exec php artisan migrate`
+
+## Endpoints
+### Send email notification
+**POST** method  
+> `api/messages  `
+
+Example of body:
+```json
+{
+    "recipients" : [
+        {
+            "email":"alebab@ciklum.com"
+        }
+    ],
+    "data" : {
+        "token" : "dwafwffwafawfkmfwakfkwnfknawfwaf"
+    },
+    "module" : "user",
+    "action" : "change-password"
+}
+```
+
+## Console commands
+### Send email notification
+> `php artisan email:send rec module action data` 
+- rec `(string)` - Recipient of email
+- module `(string)` - Module name
+- action `(string)` - Action in the module
+- data `(array)` - Data for email
+
+Example
+> `docker-compose exec php artisan email:send alebab@ciklum.com user change-password 'token':'token text'`
