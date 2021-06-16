@@ -35,7 +35,8 @@
 **POST** method  
 > `api/messages  `
 
-Example of body:
+Example of body:  
+*Password forgotten message*
 ```json
 {
     "recipients" : [
@@ -48,6 +49,21 @@ Example of body:
     },
     "module" : "user",
     "action" : "change-password"
+}
+```
+*Customer registered message*
+```json
+{
+    "recipients" : [
+        {
+            "email":"alebab@ciklum.com"
+        }
+    ],
+    "data" : {
+        "name" : "New user"
+    },
+    "module" : "user",
+    "action" : "customer-registered"
 }
 ```
 

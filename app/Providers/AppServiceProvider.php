@@ -12,6 +12,7 @@ use App\DataTransferObjects\Factories\MessageStoreDTOFactory;
 use App\DataTransferObjects\Factories\MessageStoreDTOFactoryInterface;
 use App\Clients\Emails\MailjetClient;
 use App\Clients\Emails\MailjetClientInterface;
+use App\Handlers\Emails\CustomerRegisteredEmailHandler;
 use App\Handlers\Emails\EmailHandlerPool;
 use App\Handlers\Emails\EmailHandlerPoolInterface;
 use App\Handlers\Emails\UserChangePasswordEmailHandler;
@@ -130,6 +131,7 @@ class AppServiceProvider extends ServiceProvider
                 $pool = new EmailHandlerPool();
 
                 $pool->add($container->get(UserChangePasswordEmailHandler::class), 'user.change-password');
+                $pool->add($container->get(CustomerRegisteredEmailHandler::class), 'user.customer-registered');
 
                 return $pool;
             }
